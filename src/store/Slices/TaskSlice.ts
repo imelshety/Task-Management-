@@ -15,7 +15,8 @@ const initialState: ITaskState = {
   status: "idle",
 };
 
-export const fetchTasks = createAsyncThunk("fetchTasks", async () => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const fetchTasks:any = createAsyncThunk("fetchTasks", async () => {
   const response = await axios.get(API_URL);
   return response.data;
 });
