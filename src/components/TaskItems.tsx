@@ -7,7 +7,12 @@ import EditTask from "./EditTask/EditTask";
 import DeleteTask from "./DeleteTask/DeleteTask";
 import { Itask } from "../services/api";
 
-const TaskItems = () => {
+interface TaskItemsProps {
+  searchTerm: string;
+  filter: "all" | "completed" | "incompleted";
+}
+
+const TaskItems: React.FC<TaskItemsProps> = ({ searchTerm, filter }) => {
   const dispatch = useDispatch();
   const { tasks, status } = useSelector((state: RootState) => state.tasks);
   const [selectedTask, setSelectedTask] = useState<Itask | null>(null);
@@ -65,6 +70,16 @@ const TaskItems = () => {
     }
   }, [selectedTask, taskToDelete]);
 
+  // Filter tasks based on the search term and filter
+  const filteredTasks = tasks.filter((task) => {
+    const matchesSearch = task.title.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesFilter =
+      filter === "all" ||
+      (filter === "completed" && task.completed) ||
+      (filter === "incompleted" && !task.completed);
+    return matchesSearch && matchesFilter;
+  });
+
   return (
     <>
       <div className="overflow-x-auto mt-[5rem]">
@@ -81,8 +96,8 @@ const TaskItems = () => {
             </tr>
           </thead>
           <tbody>
-            {tasks.length ? (
-              tasks.slice(0, displayedTasks).map((task) => (
+            {filteredTasks.length ? (
+              filteredTasks.slice(0, displayedTasks).map((task) => (
                 <tr
                   key={task.id}
                   className="shadow-lg border-b-2 border-secondary-400 text-xl text-secondary-600 bg-white mb-4"
@@ -114,7 +129,7 @@ const TaskItems = () => {
                       {task.priority}
                     </span>
                   </td>
-                  <td >
+                  <td>
                     <span
                       className={`rounded-2xl text-sm lg:text-xl ms-2 lg:ms-5 p-4 text-center ${
                         task.completed
@@ -145,13 +160,13 @@ const TaskItems = () => {
               ))
             ) : (
               <tr>
-                <td className="text-center py-4">No tasks available</td>
+                <td className=" text-center py-4 text-xl text-secondary-600 font-bold">No tasks ya Man</td>
               </tr>
             )}
           </tbody>
         </table>
       </div>
-      {displayedTasks < tasks.length && (
+      {displayedTasks < filteredTasks.length && (
         <div className="flex justify-center mt-8">
           <Button onClick={handleShowMore}>Show More</Button>
         </div>

@@ -3,14 +3,27 @@ import { GrCompliance } from "react-icons/gr";
 import { RxComponent1 } from "react-icons/rx";
 import { GoAlert } from "react-icons/go";
 import TaskItems from "./TaskItems";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../store/store";
+import { fetchTasks } from "../store/Slices/TaskSlice";
+
 
 const TaskList = () => {
-  // const handleCheckboxChange = (taskId) => {
-  //   setCheckedTasks((prev) => ({
-  //     ...prev,
-  //     [taskId]: !prev[taskId],
-  //   }));
-  // };
+  const dispatch = useDispatch();
+  const { status } = useSelector((state: RootState) => state.tasks);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filter, setFilter] = useState<"all" | "completed" | "incompleted">(
+    "all"
+  );
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(event.target.value);
+  };
+  useEffect(() => {
+    if (status === "idle") {
+      dispatch(fetchTasks());
+    }
+  }, [status, dispatch]);
 
   return (
     <>
@@ -23,6 +36,8 @@ const TaskList = () => {
             type="text"
             className="grow placeholder-secondary-600"
             placeholder="Find Task"
+            value={searchTerm}
+            onChange={handleSearchChange}
           />
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -43,32 +58,48 @@ const TaskList = () => {
             Sort By
           </option>
           <option>priority</option>
-          <option>Due Date</option>
           <option>creation date</option>
         </select>
       </div>
       <div className="w-full flex justify-center items-center gap-2 lg:gap-8 mt-8">
-        <button className="bg-white shadow-xl w-18 h-18 lg:w-24 lg:h-24 text-secondary-600 rounded hover:bg-secondary-600 hover:text-white transform hover:scale-105 transition duration-300 ease-in-out group">
-          <span className="flex flex-col items-center gap-2 py-1 px-4 pt-2 group-hover:text-white">
+        <button
+          className={`bg-white shadow-xl w-18 h-18 lg:w-24 lg:h-24 text-secondary-600 rounded hover:bg-secondary-600 hover:text-white transform hover:scale-105 transition duration-300 ease-in-out group ${
+            filter === "all" ? "bg-secondary-600 text-white" : ""
+          }`}
+          onClick={() => setFilter("all")}
+        >
+          <span className="flex flex-col items-center gap-2 py-1 px-4 pt-2 text-secondary-600 group-hover:text-white">
             <RxComponent1 className="text-3xl" />
             All
           </span>
         </button>
-        <button className="bg-white shadow-xl  w-18 h-18 lg:w-24 lg:h-24 text-secondary-600 rounded hover:bg-secondary-600 hover:text-white transform hover:scale-105 transition duration-300 ease-in-out group">
+        <button
+          className={`bg-white shadow-xl w-18 h-18 lg:w-24 lg:h-24 text-secondary-600 rounded hover:bg-secondary-600 hover:text-white transform hover:scale-105 transition duration-300 ease-in-out group`}
+          onClick={() => setFilter("completed")}
+        >
           <span className="flex flex-col items-center gap-2 py-1 px-4 pt-2 group-hover:text-white">
             <GrCompliance className="text-3xl" />
             Completed
           </span>
         </button>
-        <button className="bg-white shadow-xl  w-18 h-18 lg:w-24 lg:h-24 text-secondary-600 rounded hover:bg-secondary-600 hover:text-white transform hover:scale-105 transition duration-300 ease-in-out group">
+        <button
+          className={`bg-white shadow-xl w-18 h-18 lg:w-24 lg:h-24 text-secondary-600 rounded hover:bg-secondary-600 hover:text-white transform hover:scale-105 transition duration-300 ease-in-out group`}
+          onClick={() => setFilter("incompleted")}
+        >
           <span className="flex flex-col items-center gap-2 py-1 px-4 pt-2 group-hover:text-white text-base">
             <GoAlert className="text-3xl" />
             Incompleted
           </span>
         </button>
       </div>
-      <TaskItems />
-      
+       {/* Loading Spinner */}
+       {status === "pending" && (
+        <div className="flex justify-center items-center mt-8">
+          <span className="loading loading-spinner loading-lg text-secondary-600"></span>
+        </div>
+      )}
+      {/* Task Items */}
+      {status !== "pending" && <TaskItems  searchTerm={searchTerm} filter={filter}/>}
     </>
   );
 };
