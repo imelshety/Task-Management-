@@ -87,23 +87,23 @@ const TaskItems = () => {
                   key={task.id}
                   className="shadow-lg border-b-2 border-secondary-400 text-xl text-secondary-600 bg-white mb-4"
                 >
-                  <th>
+                  <td>
                     <label>
                       <input
                         type="checkbox"
-                        className="checkbox bg-white border-2 shadow-lg"
+                        className="checkbox p-1 lg:p-4 bg-white border-2 shadow-lg"
                         checked={task.completed}
                         onChange={() => handleToggleCompleted(task.id)}
                       />
                     </label>
-                  </th>
+                  </td>
                   <td className="py-12">
                     <span className="font-bold">{task.id}</span>
                   </td>
                   <td>{task.title}</td>
                   <td className="flex items-center py-12">
                     <span
-                      className={`rounded-full text-lg w-20 h-8 text-center ${
+                      className={`rounded-xl text-sm lg:text-lg p-3 text-center ${
                         task.priority === "High"
                           ? "bg-red-500 text-white"
                           : task.priority === "Medium"
@@ -116,7 +116,7 @@ const TaskItems = () => {
                   </td>
                   <td >
                     <span
-                      className={`rounded-2xl text-xl ms-2 lg:ms-5 p-4 text-center ${
+                      className={`rounded-2xl text-sm lg:text-xl ms-2 lg:ms-5 p-4 text-center ${
                         task.completed
                           ? "bg-green-500 text-white"
                           : "bg-red-500 text-white"
@@ -127,7 +127,7 @@ const TaskItems = () => {
                   </td>
                   <td>
                     <Button
-                      className="uppercase"
+                      className="uppercase p-2 lg:p-4"
                       onClick={() => handleOpenModal(task)}
                     >
                       details
@@ -135,7 +135,7 @@ const TaskItems = () => {
                   </td>
                   <td>
                     <Button
-                      className="uppercase hover:bg-red-600 hover:border-red-500"
+                      className="uppercase hover:bg-red-600 hover:border-red-500 p-2 lg:p-4"
                       onClick={() => handleOpenDeleteModal(task)}
                     >
                       delete
