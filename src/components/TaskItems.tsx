@@ -1,15 +1,17 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store/store";
-import { fetchTasks } from "../store/Slices/TaskSlice";
+import { fetchTasks, deleteTask, toggleTaskCompleted } from "../store/Slices/TaskSlice";
 import Button from "./Button";
 import EditTask from "./EditTask/EditTask";
+import DeleteTask from "./DeleteTask/DeleteTask";
 import { Itask } from "../services/api";
 
 const TaskItems = () => {
   const dispatch = useDispatch();
   const { tasks, status } = useSelector((state: RootState) => state.tasks);
   const [selectedTask, setSelectedTask] = useState<Itask | null>(null);
+  const [taskToDelete, setTaskToDelete] = useState<Itask | null>(null);
   const [displayedTasks, setDisplayedTasks] = useState(8);
 
   useEffect(() => {
@@ -30,14 +32,38 @@ const TaskItems = () => {
     setSelectedTask(null);
   };
 
+  const handleOpenDeleteModal = (task: Itask) => {
+    setTaskToDelete(task);
+  };
+
+  const handleCloseDeleteModal = () => {
+    setTaskToDelete(null);
+  };
+
+  const handleDeleteTask = (id: number) => {
+    dispatch(deleteTask(id));
+  };
+
+  const handleToggleCompleted = (id: number) => {
+    dispatch(toggleTaskCompleted(id));
+  };
+
   useEffect(() => {
-    const modal = document.getElementById("edit_modal") as HTMLDialogElement;
+    const editModal = document.getElementById("edit_modal") as HTMLDialogElement;
+    const deleteModal = document.getElementById("delete_modal") as HTMLDialogElement;
+
     if (selectedTask) {
-      modal?.showModal();
+      editModal?.showModal();
     } else {
-      modal?.close();
+      editModal?.close();
     }
-  }, [selectedTask]);
+
+    if (taskToDelete) {
+      deleteModal?.showModal();
+    } else {
+      deleteModal?.close();
+    }
+  }, [selectedTask, taskToDelete]);
 
   return (
     <>
@@ -49,7 +75,9 @@ const TaskItems = () => {
               <th>ID</th>
               <th>Task Name</th>
               <th>Priority</th>
+              <th>Completed?</th>
               <th>Details</th>
+              <th>DELETE</th>
             </tr>
           </thead>
           <tbody>
@@ -64,6 +92,8 @@ const TaskItems = () => {
                       <input
                         type="checkbox"
                         className="checkbox bg-white border-2 shadow-lg"
+                        checked={task.completed}
+                        onChange={() => handleToggleCompleted(task.id)}
                       />
                     </label>
                   </th>
@@ -84,11 +114,33 @@ const TaskItems = () => {
                       {task.priority}
                     </span>
                   </td>
-                  <th>
-                    <Button className="uppercase" onClick={() => handleOpenModal(task)}>
+                  <td >
+                    <span
+                      className={`rounded-2xl text-xl ms-2 lg:ms-5 p-4 text-center ${
+                        task.completed
+                          ? "bg-green-500 text-white"
+                          : "bg-red-500 text-white"
+                      }`}
+                    >
+                      {task.completed ? "Yes" : "No"}
+                    </span>
+                  </td>
+                  <td>
+                    <Button
+                      className="uppercase"
+                      onClick={() => handleOpenModal(task)}
+                    >
                       details
                     </Button>
-                  </th>
+                  </td>
+                  <td>
+                    <Button
+                      className="uppercase hover:bg-red-600 hover:border-red-500"
+                      onClick={() => handleOpenDeleteModal(task)}
+                    >
+                      delete
+                    </Button>
+                  </td>
                 </tr>
               ))
             ) : (
@@ -104,7 +156,16 @@ const TaskItems = () => {
           <Button onClick={handleShowMore}>Show More</Button>
         </div>
       )}
-      {selectedTask && <EditTask task={selectedTask} closeModal={handleCloseModal} />}
+      {selectedTask && (
+        <EditTask task={selectedTask} closeModal={handleCloseModal} />
+      )}
+      {taskToDelete && (
+        <DeleteTask
+          task={taskToDelete}
+          closeModal={handleCloseDeleteModal}
+          onDelete={handleDeleteTask}
+        />
+      )}
     </>
   );
 };

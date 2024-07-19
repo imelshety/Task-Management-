@@ -38,6 +38,15 @@ export const TaskSlice = createSlice({
         state.tasks[index] = action.payload;
       }
     },
+    deleteTask: (state, action: PayloadAction<number>) => {
+      state.tasks = state.tasks.filter(task => task.id !== action.payload);
+    },
+    toggleTaskCompleted: (state, action: PayloadAction<number>) => {
+      const index = state.tasks.findIndex(task => task.id === action.payload);
+      if (index !== -1) {
+        state.tasks[index].completed = !state.tasks[index].completed;
+      }
+    }
   },
   extraReducers: (builder) => {
     builder.addCase(fetchTasks.fulfilled, (state, action) => {
@@ -54,5 +63,5 @@ export const TaskSlice = createSlice({
   },
 });
 
-export const { addNewTask, updateTask } = TaskSlice.actions;
+export const { addNewTask, updateTask , deleteTask, toggleTaskCompleted  } = TaskSlice.actions;
 export default TaskSlice.reducer;
