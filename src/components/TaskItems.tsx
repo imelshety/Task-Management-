@@ -134,12 +134,12 @@ const TaskItems: React.FC<TaskItemsProps> = ({ searchTerm, filter, sortOption })
                   {sortedTasks.length ? (
                     sortedTasks.slice(0, displayedTasks).map((task, index) => (
                       <Draggable key={task.id} draggableId={task.id.toString()} index={index}>
-                        {(provided) => (
+                        {(provided,snapshot) => (
                           <tr
                             ref={provided.innerRef}
                             {...provided.draggableProps}
                             {...provided.dragHandleProps}
-                            className="shadow-lg border-b-2 border-secondary-400 text-xl text-secondary-600 bg-white mb-4"
+                            className={`shadow-lg border-b-2 border-secondary-400 text-xl text-secondary-600 bg-white mb-4 draggable-item ${snapshot.isDragging ? 'dragging' : ''}`}
                           >
                             <td>
                               <label>
