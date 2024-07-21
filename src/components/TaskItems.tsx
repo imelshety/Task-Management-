@@ -10,9 +10,10 @@ import { Itask } from "../services/api";
 interface TaskItemsProps {
   searchTerm: string;
   filter: "all" | "completed" | "incompleted";
+  sortOption: "priority" | "status" | "";
 }
 
-const TaskItems: React.FC<TaskItemsProps> = ({ searchTerm, filter }) => {
+const TaskItems: React.FC<TaskItemsProps> = ({ searchTerm, filter, sortOption }) => {
   const dispatch = useDispatch();
   const { tasks, status } = useSelector((state: RootState) => state.tasks);
   const [selectedTask, setSelectedTask] = useState<Itask | null>(null);
@@ -79,9 +80,20 @@ const TaskItems: React.FC<TaskItemsProps> = ({ searchTerm, filter }) => {
       (filter === "incompleted" && !task.completed);
     return matchesSearch && matchesFilter;
   });
+  // sorting tasks based on priority and status
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const sortedTasks = filteredTasks.sort((a:any, b:any) => {
+    if (sortOption === "priority") {
+      const priorityOrder: { [key: string]: number } = { Low: 1, Medium: 2, High: 3 };
+      return priorityOrder[a.priority] - priorityOrder[b.priority];
+    } else if (sortOption === "status") {
+      return Number(a.completed) - Number(b.completed);
+    }
+    return 0;
+  });
 
   return (
-    <>
+  <>
       <div className="overflow-x-auto mt-[5rem]">
         <table className="table w-full">
           <thead className="bg-white">
@@ -96,8 +108,8 @@ const TaskItems: React.FC<TaskItemsProps> = ({ searchTerm, filter }) => {
             </tr>
           </thead>
           <tbody>
-            {filteredTasks.length ? (
-              filteredTasks.slice(0, displayedTasks).map((task) => (
+            {sortedTasks.length ? (
+              sortedTasks.slice(0, displayedTasks).map((task) => (
                 <tr
                   key={task.id}
                   className="shadow-lg border-b-2 border-secondary-400 text-xl text-secondary-600 bg-white mb-4"
@@ -160,13 +172,13 @@ const TaskItems: React.FC<TaskItemsProps> = ({ searchTerm, filter }) => {
               ))
             ) : (
               <tr>
-                <td className=" text-center py-4 text-xl text-secondary-600 font-bold">No tasks ya Man</td>
+                <td className=" text-center py-4 text-xl text-secondary-600 font-bold">No tasks found</td>
               </tr>
             )}
           </tbody>
         </table>
       </div>
-      {displayedTasks < filteredTasks.length && (
+      {displayedTasks < sortedTasks.length && (
         <div className="flex justify-center mt-8">
           <Button onClick={handleShowMore}>Show More</Button>
         </div>
