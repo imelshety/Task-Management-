@@ -46,6 +46,9 @@ export const TaskSlice = createSlice({
       if (index !== -1) {
         state.tasks[index].completed = !state.tasks[index].completed;
       }
+    },
+    updateTasksOrder: (state, action: PayloadAction<Itask[]>) => {
+      state.tasks = action.payload;
     }
   },
   extraReducers: (builder) => {
@@ -63,5 +66,5 @@ export const TaskSlice = createSlice({
   },
 });
 
-export const { addNewTask, updateTask , deleteTask, toggleTaskCompleted  } = TaskSlice.actions;
+export const { addNewTask, updateTask , deleteTask, toggleTaskCompleted , updateTasksOrder } = TaskSlice.actions;
 export default TaskSlice.reducer;
