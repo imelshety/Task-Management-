@@ -189,7 +189,7 @@ const TaskItems: React.FC<TaskItemsProps> = ({ searchTerm, filter, sortOption })
                             </td>
                             <td>
                               <Button
-                                className="uppercase hover:bg-red-600 hover:border-red-500 p-2 lg:p-4"
+                                className="uppercase delete-btn p-2 lg:p-4"
                                 onClick={() => handleOpenDeleteModal(task)}
                               >
                                 delete

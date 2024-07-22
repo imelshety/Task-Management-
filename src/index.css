@@ -15,3 +15,8 @@ html
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   background: white; /* Ensure the dragged item has a background to avoid transparency issues */
 }
+.delete-btn:hover
+{
+  background-color: rgb(220 38 38 / var(--tw-bg-opacity)) !important;
+  border-color: rgb(239 68 68 / var(--tw-border-opacity)) !important;
+}
